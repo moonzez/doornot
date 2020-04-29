@@ -1,5 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Todo } from '../../models/Todo';
+import { TodoService } from '../../services/todo.service';
 
 @Component({
   selector: 'app-todo-item',
@@ -8,10 +9,27 @@ import { Todo } from '../../models/Todo';
 })
 export class TodoItemComponent implements OnInit {
   @Input() todo:Todo;
+  @Output() deleteTodo:EventEmitter<Todo> = new EventEmitter();
 
-  constructor() { }
+  constructor(private todoService:TodoService) { }
 
   ngOnInit(): void {
   }
 
+  setClasses() {
+    let classes = {
+      todo: true,
+      'is-complete': this.todo.completed
+    }
+    return classes;
+  }
+
+  onToggle() {
+    this.todo.completed = !this.todo.completed
+    this.todoService.toggleCompleted(this.todo).subscribe();
+  }
+
+  onDelete() {
+    this.deleteTodo.emit(this.todo);
+  }
 }
